@@ -68,8 +68,10 @@ class TextInput extends InputWidget
         $attrName = Html::getAttributeName($this->attribute);
         foreach ($this->model->getActiveValidators($attrName) as $validator) {
             if ($validator instanceof StringValidator && $validator->max !== null) {
-                $this->options['maxlength'] = $validator->max;
-                return;
+                if ($validator->when === null || call_user_func($validator->when, $this->model, $this->attribute)) {
+                    $this->options['maxlength'] = $validator->max;
+                    return;
+                }
             }
         }
         return;
